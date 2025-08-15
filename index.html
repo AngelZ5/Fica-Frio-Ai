@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fica Frio Aí | A Loja de Ar Condicionado</title>
+    <!-- Inclui a fonte Inter do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS via CDN para estilização rápida e moderna -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            /* Cor de fundo cinza claro */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Estilos para o logo de floco de neve */
+        .snowflake-icon {
+            color: #3b82f6;
+            /* Azul do Tailwind */
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        /* Tela de loading */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3b82f6;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Fundo com ondas de neve */
+        .snow-waves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: url('https://i.ibb.co/p4RxmJj/snow-wave.png') repeat-x;
+            animation: snow 20s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes snow {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Botão próxima página com efeito de onda */
+        .btn-next {
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-next::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: left 0.4s ease;
+        }
+
+        .btn-next:hover::after {
+            left: 0;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+    <!-- Tela de loading -->
+    <div id="loading">
+        <div class="loader"></div>
+    </div>
+
+
+    <!-- Header e Navegação -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto flex items-center justify-between p-4 sm:p-6">
+            <!-- Logo e Nome do Site -->
+            <a href="#" class="flex items-center space-x-3 text-2xl font-bold text-gray-900">
+                <!-- Floco de Neve em SVG -->
+                <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4v16m8-8H4m12-4l-4 4-4-4m8 8l-4-4-4 4"></path>
+                </svg>
+                <span>Fica Frio Aí</span>
+            </a>
+            <!-- Barra de pesquisa -->
+            <div class="flex justify-center my-6 relative z-10">
+                <input type="text" id="search" placeholder="Buscar produtos..."
+                    class="w-full max-w-lg p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+
+            <!-- Links de Navegação -->
+            <ul class="hidden md:flex items-center space-x-6 text-lg font-medium">
+                <li><a href="#" class="text-gray-600 hover:text-blue-500 transition-colors">Início</a></li>
+                <li><a href="#produtos" class="text-gray-600 hover:text-blue-500 transition-colors">Produtos</a></li>
+                <li><a href="#contato" class="text-gray-600 hover:text-blue-500 transition-colors">Contato</a></li>
+            </ul>
+
+            <!-- Botão do Carrinho -->
+            <div class="relative">
+                <button id="open-cart-btn"
+                    class="p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors relative">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.102 1.76.707 1.76H17m0-7a2 2 0 100-4 2 2 0 000 4zm-8 2a2 2 0 100-4 2 2 0 000 4z">
+                        </path>
+                    </svg>
+                    <span id="cart-count"
+                        class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="bg-blue-600 text-white py-16 sm:py-24 text-center">
+            <div class="container mx-auto px-4">
+                <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-4">
+                    Fique fresco, economize mais
+                </h1>
+                <p class="text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
+                    As melhores ofertas em ar condicionado e climatizadores, com a tecnologia mais avançada do mercado.
+                </p>
+                <a href="#produtos"
+                    class="bg-white text-blue-600 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-200 transition-colors transform hover:scale-105">
+                    Ver Produtos
+                </a>
+            </div>
+        </section>
+
+        <!-- Produtos em Destaque -->
+        <section id="produtos" class="py-12 sm:py-20">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-12 text-blue-600">Produtos em Destaque</h2>
+
+                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <!-- Cards de Produtos serão gerados aqui pelo JS -->
+
+                </div>
+            </div>
+            <!-- Botão próxima página -->
+            <div class="flex justify-center py-10 relative z-10">
+                <button
+                    class="btn-next bg-blue-600 text-white font-bold py-6 px-10 rounded-lg text-xl flex items-center gap-3 hover:bg-blue-700">
+                    PRÓXIMA PÁGINA
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-7 h-7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+
+        </section>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-10">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 Fica Frio Aí. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Modais (Ocultos por padrão) -->
+
+    <!-- Modal de Detalhe do Produto -->
+    <div id="product-modal"
+        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl transform scale-95 transition-transform">
+            <div class="flex justify-end">
+                <button id="close-product-modal-btn"
+                    class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                <img id="modal-product-img" src="" alt="Imagem do Produto"
+                    class="w-full md:w-1/2 rounded-lg object-cover shadow-lg">
+                <div class="w-full md:w-1/2">
+                    <h3 id="modal-product-name" class="text-3xl font-bold text-gray-900 mb-2"></h3>
+                    <p id="modal-product-price" class="text-2xl font-extrabold text-blue-600 mb-4"></p>
+                    <p id="modal-product-description" class="text-gray-600 mb-4"></p>
+                    <p id="modal-product-details" class="text-sm text-gray-500 mb-6"></p>
+                    <button id="add-to-cart-modal-btn"
+                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors">
+                        Adicionar ao Carrinho
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Carrinho de Compras -->
+    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-xl transform scale-95 transition-transform">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">Seu Carrinho</h3>
+                <button id="close-cart-modal-btn"
+                    class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            </div>
+            <div id="cart-items" class="space-y-4">
+                <!-- Itens do carrinho serão inseridos aqui -->
+                <p id="empty-cart-message" class="text-gray-500 text-center">Seu carrinho está vazio.</p>
+            </div>
+            <div id="cart-summary" class="mt-6 pt-4 border-t border-gray-200">
+                <p class="text-xl font-bold flex justify-between">
+                    Total: <span id="cart-total-price" class="text-blue-600">R$ 0,00</span>
+                </p>
+                <button id="checkout-btn"
+                    class="mt-4 w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition-colors">
+                    Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Checkout (Formulário Simples) -->
+    <div id="checkout-modal"
+        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">Checkout</h3>
+                <button id="close-checkout-modal-btn"
+                    class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            </div>
+            <form id="checkout-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="checkout-name" class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                        <input type="text" id="checkout-name" name="name"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                            required>
+                    </div>
+                    <div>
+                        <label for="checkout-email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="checkout-email" name="email"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+                            required>
+                    </div>
+                    <div id="payment-details" class="space-y-4">
+                        <!-- Opções de pagamento falsas -->
+                        <h4 class="text-md font-semibold mt-4">Detalhes de Pagamento</h4>
+                        <div class="flex items-center">
+                            <input id="credit-card" name="payment-method" type="radio"
+                                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300" checked>
+                            <label for="credit-card" class="ml-3 block text-sm font-medium text-gray-700">Cartão de
+                                Crédito</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="pix" name="payment-method" type="radio"
+                                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                            <label for="pix" class="ml-3 block text-sm font-medium text-gray-700">PIX</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit"
+                    class="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors">
+                    Finalizar Pedido
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Pedido -->
+    <div id="order-confirm-modal"
+        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm text-center">
+            <h3 class="text-2xl font-bold text-green-600 mb-4">Pedido Recebido!</h3>
+            <p class="text-gray-700 mb-6">Obrigado pela sua compra. Em breve você receberá um e-mail de confirmação.</p>
+            <button id="close-confirm-modal-btn"
+                class="bg-blue-600 text-white py-2 px-6 rounded-lg font-bold hover:bg-blue-700">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+
+    <!-- JavaScript para a lógica do E-commerce -->
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const products = [
+                {
+                    id: 1,
+                    name: 'Ar Condicionado Split Inverter 12.000 BTUs LG Dual Inverter',
+                    price: 2199.00,
+                    image: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQCgW42-jDQLJ8uaWAEZYmyACsaD1vnYtoZ1RqVTeI6IsLUcYnmJWtOwoJqF1bPTFJOit33CNhDFAr3mKQznXncxhXTeSxfe8ZchCMG0sMdS-7lVjlCEGVe',
+                    description: 'Tecnologia Dual Inverter que economiza até 70% de energia. Silencioso e eficiente para ambientes de até 20m².',
+                    details: 'BTUs: 12.000 | Tecnologia: Inverter | Nível de Ruído: 42 dB | Funções: Timer, Sleep, Reinício Automático.'
+                },
+                {
+                    id: 2,
+                    name: 'Ar Condicionado Portátil 9.000 BTUs Philco',
+                    price: 1599.00,
+                    image: 'data:image/webp;base64,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',
+                    description: 'Praticidade e mobilidade para refrescar qualquer cômodo da sua casa. Fácil de instalar e transportar.',
+                    details: 'BTUs: 9.000 | Tecnologia: Portátil | Nível de Ruído: 50 dB | Funções: Ventilação, Desumidificação, Resfriamento.'
+                },
+                {
+                    id: 3,
+                    name: 'Climatizador de Ar Evaporativo Mondial',
+                    price: 299.90,
+                    image: 'data:image/webp;base64,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',
+                    description: 'Uma alternativa econômica e sustentável para refrescar o ambiente. Umidifica e ventila ao mesmo tempo.',
+                    details: 'Capacidade do Tanque: 6L | Funções: Umidificador, Ventilação | Ideal para ambientes pequenos.'
+                },
+                {
+                    id: 4,
+                    name: 'Ventilador de Torre com Controle Remoto',
+                    price: 189.50,
+                    image: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQZrlPlv8qMRG-LDc_KD82wzS1hvmCmYPGGxlkNMrYgE1yDL1oVQ4fwMBN1TH_FSVuyQeuTMLTt0U1J3IZJdICWYF_1HMgtJTy6NGYPBqW1sZJgeD7TU8SH1nBlV4tyLo88WidEBA&usqp=CAc',
+                    description: 'Design moderno e compacto, com 3 velocidades e timer. Ocupa pouco espaço e tem alta potência.',
+                    details: 'Potência: 50W | Velocidades: 3 | Funções: Timer, Oscilação | Altura: 100cm.'
+                },
+                {
+                    id: 5,
+                    name: 'Ar Condicionado de Janela 7.500 BTUs Springer',
+                    price: 1250.00,
+                    image: 'data:image/webp;base64,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',
+                    description: 'O clássico modelo de janela, eficiente e durável. Ideal para quem busca um equipamento robusto.',
+                    details: 'BTUs: 7.500 | Tecnologia: Mecânico | Nível de Ruído: 55 dB | Funções: Resfriamento, Ventilação.'
+                },
+                {
+                    id: 6,
+                    name: 'Cortina de Ar 90cm Elgin',
+                    price: 850.00,
+                    image: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTOPBvg_OnpvwXUglcTGbgYalzDgJH-OKL1k3klLUqasJHIQBtNbmXIOSk8WbtELBsuaxnJkx2TT0C8lVM8-gBecsubbQM3diCHRrCz0W1IZoUjSUmFtSsHYU00Qkp1qP-krobK1bw&usqp=CAc',
+                    description: 'Mantém a temperatura do ambiente estável em entradas de lojas e comércios. Evita a entrada de poeira e insetos.',
+                    details: 'Largura: 90cm | Velocidade do Ar: 11 m/s | Instalação: Vertical ou Horizontal.'
+                },
+                {
+                    id: 7,
+                    name: 'Mini Climatizador USB',
+                    price: 89.90,
+                    image: 'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSdpPrBM_aeUv9lgFhM5TGYJZcKXgthqTQxAoCyE4vC_My1EfzSd0AjYqiboAmoRSdm4KpqlCM-Y3EyB_e95g0aSeI7yrYG55S_xKL8gRd_YOsApU0xyThn36EWKBGZKaY5EwnfMYA&usqp=CAc',
+                    description: 'Pequeno e potente, perfeito para a sua mesa de escritório. Funciona com qualquer porta USB.',
+                    details: 'Alimentação: USB | Tanque de Água: 500ml | Funções: Resfriamento, Umidificação.'
+                },
+                {
+                    id: 8,
+                    name: 'Split Inverter Wi-Fi 18.000 BTUs Samsung Wind-Free',
+                    price: 3500.00,
+                    image: 'data:image/webp;base64,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',
+                    description: 'Controle a temperatura de qualquer lugar através do seu smartphone. Máxima potência com inteligência e economia.',
+                    details: 'BTUs: 18.000 | Tecnologia: Inverter e Wi-Fi | Nível de Ruído: 45 dB | Funções: App de controle, Timer, Sleep.'
+                },
+                {
+                    id: 9,
+                    name: 'Ar Condicionado Split Inverter 9.000 BTUs Fujitsu',
+                    price: 1850.00,
+                    image: 'data:image/webp;base64,UklGRnYEAABXRUJQVlA4IGoEAACQIwCdASrVANUAPj0ejUSiIaSRmoy4SAPEtLdqn30Doy8AD4Y05GFjzb/qXUAAj+3fJrLKqv7IPJaFTDNfsg8loVMM1+yDyWhUcGSSoHJwN3WcUxVsLaOHC4IgNhFVxDijfPvwzixeE90kiKkaHqr3p6uhXLeZBXoA6JH9b7cAM4VGH8thnmmSQNJMOgT7YIBJXLZP80PDxz7uUZZDZEdogr6kHA2DCCUZYaM6+HyYZeJ3g0qC0giJNHvPs52PXUH1Xt8ViP61J72IWpGPE7QZCZYukjld1O/6zZKPENmMcmiJEYb7h9MkQi8Dm8vj56VHttGcjXNovA6w9HiR8xnpkNODr2ka8/a35xUg8loVMM1+yDyWhUwzX7IPJaFTDNfsg8koAAD+/5GQAAAAaUmRpjXwIFDgHcFS1hJekUSapkkEsTKQV+7wtyZcSJq+81nNtCSCavmAp7SyhrBGHsHmGTbqNXqPPUsMRZQo5sJEvsfgjGl4yZNTwAADo87paDheqOOeQJ4KLmZV2+LJwgoo0x0SvP7b6bk2C3+PikmYmp7WPsS/fQ4WN7EmLMkjhg2FBojs9mRQH8OXIgsprF02DfGbJlFx87eFdVhHZhJYRLI04Rf5jpE0MWGZWas36VuMRNvjWgnmnivResp2m3cHQYjQNdW2aKC6iOGkQftgrBjhKQQTILzP5l+ugHa1+XyCXNBnjbwxrGt/pxsziPjPz1isDVdT8tfd8eG/tLmzna78eFY/+Shvyh0+WvPz9ANEylrkFdmLxZ4OPaPD+NCQNHFfG07JqISCNc1/rbiYHHsW2TZ/h+c1V9XB5zAT4kN75Bhj6t6o89Lk2HnWlDLFtzQkLKwnn0Eg7dTFHcRbKt6H7VBNFL4fo5ZJ28UeRkuQM+cbOc2yhYB7gT4cO0UupIMHGQIQha2kIcsfyS+H6S7W/oPmjf8XaCfMMqClnJzL/nztK+4CA2V0tfao0JRFBepz/qthQDlqCfo1ThFTTuQJ2wpk3WR7Rs8E9w06Gxs9Ib80urqbwVDtdE4VLBbYODcY1RtYljL/S3Wer+DCL49E5ATQElTNtCTYKq5SvwH4W8WPsU4zgEvDFlb6hrgzaxlR9tgMxcsbvy8SikNdn77plRvopxZmwFGyoTVu/cA5wtDJiWj738+1J9rUMXjwgW7paA15EV4eb2PPJTvLpTRp/g9DQg5VFVMM540/wRVKxxjGZFjFGs/B0XyEWKcrni+Nf0uH8pJK+VUPy60/qF/p5SBvRQYxA+SXA5Zc1XutCJ5YWZ//naQ+GI1IsMC8FnlSkKJJqmBsQ2uMuA+UwY15XeCKfNAxmKki76esPhQREYA7lTXRAegWwollHJN+7f/UeZc/H9ipRHh7Evbh7RiWU+zwxytIa1CVRlP62FL+CT40HNvzcFrMR0v1A4EI6/EVEo3Te9KZR2alRs/eb4pqH2fxyvLTf1pTTIcRDufWS5T5cnZjs/3dGnRQkmgAAAAAAAAAAAAAAA==',
+                    description: 'Silencioso e econômico, ideal para ambientes pequenos e médios.',
+                    details: 'BTUs: 9.000 | Tecnologia: Inverter | Nível de Ruído: 40 dB | Funções: Sleep, Timer, Desumidificação.'
+                },
+                {
+                    id: 10,
+                    name: 'Ar Condicionado Split Cassete 36.000 BTUs',
+                    price: 8500.00,
+                    image: 'data:image/jpeg;base64,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',
+                    description: 'Potente e discreto, perfeito para grandes espaços comerciais.',
+                    details: 'BTUs: 36.000 | Tecnologia: Inverter | Funções: Distribuição 360º, Timer, Controle Remoto.'
+                }
+            ];
+
+
+            let cart = [];
+
+            const productGrid = document.getElementById('product-grid');
+            const productModal = document.getElementById('product-modal');
+            const cartModal = document.getElementById('cart-modal');
+            const checkoutModal = document.getElementById('checkout-modal');
+            const orderConfirmModal = document.getElementById('order-confirm-modal');
+            const cartCount = document.getElementById('cart-count');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalPrice = document.getElementById('cart-total-price');
+
+            // Função para renderizar os produtos na grade
+            function renderProducts() {
+                productGrid.innerHTML = ''; // Limpa o grid
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 cursor-pointer';
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">${product.name}</h3>
+                            <p class="text-2xl font-extrabold text-blue-600 mb-3">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
+                            <button class="add-to-cart-btn mt-2 w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition-colors" data-id="${product.id}">
+                                Comprar
+                            </button>
+                        </div>
+                    `;
+                    productGrid.appendChild(productCard);
+                });
+            }
+
+            // Função para renderizar o carrinho
+            function renderCart() {
+                cartItemsContainer.innerHTML = '';
+                let total = 0;
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<p class="text-gray-500 text-center">Seu carrinho está vazio.</p>';
+                } else {
+                    cart.forEach(item => {
+                        const itemProduct = products.find(p => p.id === item.productId);
+                        total += itemProduct.price * item.quantity;
+                        const cartItem = document.createElement('div');
+                        cartItem.className = 'flex items-center justify-between border-b border-gray-200 pb-2';
+                        cartItem.innerHTML = `
+                            <div class="flex items-center space-x-4">
+                                <img src="${itemProduct.image}" alt="${itemProduct.name}" class="w-16 h-16 rounded-md">
+                                <div>
+                                    <h4 class="font-bold text-gray-900">${itemProduct.name}</h4>
+                                    <p class="text-sm text-gray-600">Qtd: ${item.quantity}</p>
+                                </div>
+                            </div>
+                            <p class="font-bold text-blue-600">R$ ${(itemProduct.price * item.quantity).toFixed(2).replace('.', ',')}</p>
+                        `;
+                        cartItemsContainer.appendChild(cartItem);
+                    });
+                }
+
+                cartTotalPrice.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+                cartCount.textContent = cart.length;
+            }
+
+            // Eventos de click
+            productGrid.addEventListener('click', (event) => {
+                const target = event.target;
+                const card = target.closest('.rounded-lg');
+                if (!card) return;
+
+                const productId = parseInt(target.dataset.id);
+                const product = products.find(p => p.id === productId);
+
+                // Se clicou no botão "Comprar", adiciona ao carrinho e fecha o modal
+                if (target.classList.contains('add-to-cart-btn')) {
+                    addToCart(productId);
+                    return;
+                }
+
+                // Se clicou em qualquer outro lugar do card, abre o modal de detalhe
+                openProductModal(product);
+            });
+
+            // Adicionar ao carrinho
+            function addToCart(productId) {
+                const existingItem = cart.find(item => item.productId === productId);
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    cart.push({ productId: productId, quantity: 1 });
+                }
+                renderCart();
+            }
+
+            // Abrir modal de produto
+            function openProductModal(product) {
+                document.getElementById('modal-product-img').src = product.image;
+                document.getElementById('modal-product-name').textContent = product.name;
+                document.getElementById('modal-product-price').textContent = `R$ ${product.price.toFixed(2).replace('.', ',')}`;
+                document.getElementById('modal-product-description').textContent = product.description;
+                document.getElementById('modal-product-details').textContent = product.details;
+
+                const addToCartBtn = document.getElementById('add-to-cart-modal-btn');
+                addToCartBtn.onclick = () => {
+                    addToCart(product.id);
+                    productModal.classList.add('hidden');
+                };
+
+                productModal.classList.remove('hidden');
+            }
+
+            // Fechar modais
+            document.getElementById('close-product-modal-btn').addEventListener('click', () => {
+                productModal.classList.add('hidden');
+            });
+            document.getElementById('close-cart-modal-btn').addEventListener('click', () => {
+                cartModal.classList.add('hidden');
+            });
+            document.getElementById('close-checkout-modal-btn').addEventListener('click', () => {
+                checkoutModal.classList.add('hidden');
+            });
+            document.getElementById('close-confirm-modal-btn').addEventListener('click', () => {
+                orderConfirmModal.classList.add('hidden');
+                // Após a confirmação, limpa o carrinho
+                cart = [];
+                renderCart();
+            });
+
+            // Abrir carrinho
+            document.getElementById('open-cart-btn').addEventListener('click', () => {
+                renderCart();
+                cartModal.classList.remove('hidden');
+            });
+
+            // Abrir checkout
+            document.getElementById('checkout-btn').addEventListener('click', () => {
+                if (cart.length > 0) {
+                    cartModal.classList.add('hidden');
+                    checkoutModal.classList.remove('hidden');
+                }
+            });
+
+            // Submissão do formulário de checkout (falso)
+            document.getElementById('checkout-form').addEventListener('submit', (event) => {
+                event.preventDefault(); // Evita o envio real do formulário
+                checkoutModal.classList.add('hidden');
+                orderConfirmModal.classList.remove('hidden');
+            });
+
+            // Inicialização
+            renderProducts();
+            renderCart();
+        });
+        // Loading desaparece quando a página carregar
+        window.addEventListener("load", () => {
+            document.getElementById("loading").style.display = "none";
+        });
+        // Filtro da barra de pesquisa
+        document.getElementById("search").addEventListener("input", function () {
+            let searchValue = this.value.toLowerCase();
+            document.querySelectorAll(".produto").forEach(item => {
+                let nome = item.textContent.toLowerCase();
+                item.style.display = nome.includes(searchValue) ? "block" : "none";
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>
