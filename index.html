@@ -109,6 +109,12 @@
         .btn-next:hover::after {
             left: 0;
         }
+
+        #mapa iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 
@@ -117,7 +123,6 @@
     <div id="loading">
         <div class="loader"></div>
     </div>
-
 
     <!-- Header e Navegação -->
     <header class="bg-white shadow-md sticky top-0 z-50">
@@ -132,12 +137,12 @@
                 </svg>
                 <span>Fica Frio Aí</span>
             </a>
+
             <!-- Barra de pesquisa -->
             <div class="flex justify-center my-6 relative z-10">
-                <input type="text" id="search" placeholder="Buscar produtos..."
+                <input type="text" id="search" placeholder="Buscar produtos ou serviços..."
                     class="w-full max-w-lg p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-
 
             <!-- Links de Navegação -->
             <ul class="hidden md:flex items-center space-x-6 text-lg font-medium">
@@ -169,17 +174,46 @@
         <section class="bg-blue-600 text-white py-16 sm:py-24 text-center">
             <div class="container mx-auto px-4">
                 <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-4">
-                    Fique fresco, economize mais
+                    Especialistas em Conserto de Ar-Condicionado
                 </h1>
                 <p class="text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
-                    As melhores ofertas em ar condicionado e climatizadores, com a tecnologia mais avançada do mercado.
+                    Assistência técnica confiável para instalação, manutenção e reparo de ar-condicionados. Atendemos
+                    residências, comércios e indústrias, sempre com preços justos e atendimento rápido.
                 </p>
-                <a href="#produtos"
-                    class="bg-white text-blue-600 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-200 transition-colors transform hover:scale-105">
-                    Ver Produtos
-                </a>
+
+                <!-- Botões de escolha -->
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+                    <button id="btn-servico"
+                        class="bg-white text-blue-600 font-bold py-3 px-6 rounded-lg shadow hover:bg-gray-200 transition">
+                        Quero consertar meu ar condicionado
+                    </button>
+                    <button id="btn-produtos"
+                        class="bg-white text-blue-600 font-bold py-3 px-6 rounded-lg shadow hover:bg-gray-200 transition">
+                        Ver produtos
+                    </button>
+                </div>
+
+                <!-- Formulário de atendimento -->
+                <div id="form-servico" class="hidden p-6 max-w-lg mx-auto bg-white text-black rounded-lg shadow-md">
+                    <h2 class="text-xl font-bold mb-4">Solicitar conserto de ar-condicionado</h2>
+                    <form id="servicoForm" class="space-y-4">
+                        <input type="text" id="nome" placeholder="Seu nome" class="w-full p-3 border rounded" required>
+                        <input type="tel" id="telefone" placeholder="Telefone" class="w-full p-3 border rounded"
+                            required>
+                        <input type="email" id="email" placeholder="E-mail" class="w-full p-3 border rounded" required>
+                        <input type="text" id="cep" placeholder="CEP" class="w-full p-3 border rounded" required>
+
+                        <!-- Mapa -->
+                        <div id="mapa" class="hidden w-full h-64 border rounded"></div>
+
+                        <button type="submit"
+                            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Confirmar</button>
+                    </form>
+                </div>
             </div>
         </section>
+
+
 
         <!-- Produtos em Destaque -->
         <section id="produtos" class="py-12 sm:py-20">
@@ -577,6 +611,45 @@
                 item.style.display = nome.includes(searchValue) ? "block" : "none";
             });
         });
+
+        // Botões do menu
+        const btnServico = document.getElementById("btn-servico");
+        const btnProdutos = document.getElementById("btn-produtos");
+        const formServico = document.getElementById("form-servico");
+        const marketplace = document.getElementById("marketplace"); // seu marketplace
+
+        btnServico.addEventListener("click", () => {
+            formServico.classList.remove("hidden");
+            if (marketplace) marketplace.classList.add("hidden");
+        });
+
+        btnProdutos.addEventListener("click", () => {
+            formServico.classList.add("hidden");
+            if (marketplace) marketplace.classList.remove("hidden");
+        });
+
+        // Mostrar mapa ao digitar CEP
+        document.getElementById("cep").addEventListener("blur", function () {
+            const cep = this.value.trim();
+            if (cep) {
+                const mapaDiv = document.getElementById("mapa");
+                mapaDiv.innerHTML = `<iframe src="https://www.google.com/maps?q=${cep}&output=embed"></iframe>`;
+                mapaDiv.classList.remove("hidden");
+            }
+        });
+
+        // Enviar formulário
+        document.getElementById("servicoForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const nome = document.getElementById("nome").value;
+            const email = document.getElementById("email").value;
+
+            // Aqui seria necessário backend para enviar e-mail
+            alert(`Obrigado, ${nome}! Enviaremos uma mensagem para ${email} para continuar o atendimento.`);
+            this.reset();
+            document.getElementById("mapa").classList.add("hidden");
+        });
+
 
     </script>
 
